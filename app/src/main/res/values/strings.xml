@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Kotlin Funiture Shop</string>
+    <string name="app_name">Kotlin Furniture Shop</string>
+    <string name="shop_description">The best simple place where you discover most wonderful furnitures and make your home beautiful</string>
 </resources>
