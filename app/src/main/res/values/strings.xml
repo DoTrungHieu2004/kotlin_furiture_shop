@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Kotlin Furniture Shop</string>
     <string name="shop_description">The best simple place where you discover most wonderful furnitures and make your home beautiful</string>
+
+    <!-- Bottom nav routes -->
+    <string name="nav_home">Home</string>
+    <string name="nav_favourites">Favourites</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_profile">Profile</string>
 </resources>
