@@ -7,4 +7,7 @@
     <string name="nav_favourites">Favourites</string>
     <string name="nav_notifications">Notifications</string>
     <string name="nav_profile">Profile</string>
+
+    <!-- Lorem ipsum placeholder -->
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vehicula convallis neque sit amet pretium. Vivamus ut interdum tellus. Nunc hendrerit, mi interdum porta porttitor, enim est varius elit, elementum volutpat leo nisl eu eros.</string>
 </resources>
