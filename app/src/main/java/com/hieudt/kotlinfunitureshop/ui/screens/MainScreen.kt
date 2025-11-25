@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hieudt.kotlinfunitureshop.R
 import com.hieudt.kotlinfunitureshop.ui.navigation.NavItem
+import com.hieudt.kotlinfunitureshop.ui.screens.fragments.HomeFragment
 
 @Composable
 fun MainScreen() {
@@ -63,7 +64,7 @@ fun MainScreen() {
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("home") { PlaceholderScreen("Home") }
+            composable("home") { HomeFragment() }
             composable("favorites") { PlaceholderScreen("Favourites") }
             composable("notifications") { PlaceholderScreen("Notifications") }
             composable("profile") { PlaceholderScreen("Profile") }
