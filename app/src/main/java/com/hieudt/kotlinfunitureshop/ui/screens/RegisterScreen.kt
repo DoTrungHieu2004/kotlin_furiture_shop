@@ -50,7 +50,7 @@ import com.hieudt.kotlinfunitureshop.ui.theme.PhilippineGray
 import com.hieudt.kotlinfunitureshop.ui.theme.RaisinBlack
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(onRegisterSuccess: () -> Unit) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -270,5 +270,5 @@ fun RegisterScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewRegisterScreen() {
-    RegisterScreen()
+    RegisterScreen(onRegisterSuccess = {})
 }

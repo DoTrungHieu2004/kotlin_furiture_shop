@@ -34,7 +34,7 @@ import com.hieudt.kotlinfunitureshop.ui.theme.KotlinFunitureShopTheme
 import com.hieudt.kotlinfunitureshop.ui.theme.RaisinBlack
 
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreen(onGettingStarted: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         // Ảnh nền toàn màn hình (background)
         Image(
@@ -89,7 +89,7 @@ fun WelcomeScreen() {
                     contentColor = Color.White
                 ),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = {},
+                onClick = onGettingStarted,
             ) {
                 Text(
                     text = "Get started",
@@ -106,6 +106,6 @@ fun WelcomeScreen() {
 @Composable
 private fun PreviewWelcomeScreen() {
     KotlinFunitureShopTheme {
-        WelcomeScreen()
+        WelcomeScreen(onGettingStarted = {})
     }
 }

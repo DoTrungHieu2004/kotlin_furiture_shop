@@ -49,7 +49,7 @@ import com.hieudt.kotlinfunitureshop.ui.theme.PhilippineGray
 import com.hieudt.kotlinfunitureshop.ui.theme.RaisinBlack
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onLoginSuccess: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -220,5 +220,5 @@ fun LoginScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewLoginScreen() {
-    LoginScreen()
+    LoginScreen(onLoginSuccess = {})
 }
