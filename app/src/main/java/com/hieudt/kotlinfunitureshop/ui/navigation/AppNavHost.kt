@@ -47,6 +47,9 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
                     navController.navigate(Graph.APP) {
                         popUpTo(Graph.AUTH) { inclusive = true }
                     }
+                },
+                onNavigateRegister = {
+                    navController.navigate(Screen.Register.route)
                 }
             )
         }
@@ -57,6 +60,9 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
                     navController.navigate(Graph.APP) {
                         popUpTo(Graph.AUTH) { inclusive = true }
                     }
+                },
+                onNavigateLogin = {
+                    navController.navigate(Screen.Login.route)
                 }
             )
         }

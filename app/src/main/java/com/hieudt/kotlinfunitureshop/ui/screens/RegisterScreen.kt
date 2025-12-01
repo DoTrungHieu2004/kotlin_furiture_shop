@@ -1,5 +1,6 @@
 package com.hieudt.kotlinfunitureshop.ui.screens
 
+import android.util.Patterns
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +26,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,14 +52,35 @@ import com.hieudt.kotlinfunitureshop.ui.theme.Gray
 import com.hieudt.kotlinfunitureshop.ui.theme.GrayX11
 import com.hieudt.kotlinfunitureshop.ui.theme.PhilippineGray
 import com.hieudt.kotlinfunitureshop.ui.theme.RaisinBlack
+import com.hieudt.kotlinfunitureshop.viewmodel.provideAuthViewModel
+import com.hieudt.kotlinfunitureshop.viewmodel.state.AuthState
 
 @Composable
-fun RegisterScreen(onRegisterSuccess: () -> Unit) {
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit,
+    onNavigateLogin: () -> Unit
+) {
+    val vm = provideAuthViewModel()
+    val state by vm.authState.collectAsState()
+
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPass by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var phoneError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+    var confirmPassError by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(key1 = state) {
+        if (state is AuthState.Success) {
+            onRegisterSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -107,10 +132,13 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(60.dp))
 
-        // Form đăng ký
+        // TextField tên người dùng
         OutlinedTextField(
             value = name,
-            onValueChange = { name = it },
+            onValueChange = {
+                name = it
+                nameError = null
+            },
             label = {
                 Text(
                     text = "Name",
@@ -120,12 +148,22 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 )
             },
             singleLine = true,
+            isError = nameError != null,
             modifier = Modifier.fillMaxWidth()
         )
+        if (nameError != null) {
+            Text(text = nameError!!, color = Color.Red, fontSize = 12.sp)
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
+
+        // TextField email
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                emailError = null
+            },
             label = {
                 Text(
                     text = "Email",
@@ -135,13 +173,49 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 )
             },
             singleLine = true,
+            isError = emailError != null,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
+        if (emailError != null) {
+            Text(text = emailError!!, color = Color.Red, fontSize = 12.sp)
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
+
+        // TextField số điện thoại
+        OutlinedTextField(
+            value = phone,
+            onValueChange = {
+                phone = it
+                phoneError = null
+            },
+            label = {
+                Text(
+                    text = "Phone number",
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = NunitoSansFamily,
+                    color = PhilippineGray
+                )
+            },
+            singleLine = true,
+            isError = phoneError != null,
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+        )
+        if (phoneError != null) {
+            Text(text = phoneError!!, color = Color.Red, fontSize = 12.sp)
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // TextField mật khẩu
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                passwordError = null
+            },
             label = {
                 Text(
                     text = "Password",
@@ -151,6 +225,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 )
             },
             singleLine = true,
+            isError = passwordError != null,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (passwordVisible) {
@@ -177,10 +252,19 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 }
             }
         )
+        if (passwordError != null) {
+            Text(text = passwordError!!, color = Color.Red, fontSize = 12.sp)
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
+
+        // TextField xác nhận mật khẩu
         OutlinedTextField(
             value = confirmPass,
-            onValueChange = { confirmPass = it },
+            onValueChange = {
+                confirmPass = it
+                confirmPassError = null
+            },
             label = {
                 Text(
                     text = "Confirm password",
@@ -190,6 +274,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 )
             },
             singleLine = true,
+            isError = confirmPassError != null,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (passwordVisible) {
@@ -216,7 +301,13 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 }
             }
         )
+        if (confirmPassError != null) {
+            Text(text = confirmPassError!!, color = Color.Red, fontSize = 12.sp)
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
+
+        // Button đăng ký
         ElevatedButton(
             border = BorderStroke(
                 width = 2.dp,
@@ -230,7 +321,43 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(),
-            onClick = {},
+            onClick = {
+                var hasError = false
+
+                if (name.isEmpty()) {
+                    nameError = "Tên người dùng không được để trống"
+                    hasError = true
+                }
+
+                if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    emailError = "Email bị bỏ trống hoặc sai định dạng"
+                    hasError = true
+                }
+
+                if (phone.isEmpty() || !phone.matches(Regex("^0[0-9]{9}\$"))) {
+                    phoneError = "Số điện thoại bị bỏ trống hoặc sai định dạng"
+                    hasError = true
+                }
+
+                if (password.isEmpty() || password.length < 6) {
+                    passwordError = "Mật khẩu bị bỏ trống hoặc quá ngắn"
+                    hasError = true
+                }
+
+                if (confirmPass != password) {
+                    confirmPassError = "Mật khẩu xác nhận không khớp"
+                    hasError = true
+                }
+
+                if (!hasError) {
+                    vm.register(
+                        name = name,
+                        email = email,
+                        password = password,
+                        phone = phone
+                    )
+                }
+            },
         ) {
             Text(
                 text = "SIGN UP",
@@ -239,7 +366,13 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 fontFamily = NunitoSansFamily
             )
         }
+
+        if (state is AuthState.Loading) {
+            CircularProgressIndicator()
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -253,7 +386,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 color = Gray,
             )
             TextButton(
-                onClick = {}
+                onClick = { onNavigateLogin() }
             ) {
                 Text(
                     text = "SIGN IN",
@@ -265,10 +398,20 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
             }
         }
     }
+
+    if (state is AuthState.Error) {
+        Text(
+            text = (state as AuthState.Error).message,
+            color = Color.Red
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewRegisterScreen() {
-    RegisterScreen(onRegisterSuccess = {})
+    RegisterScreen(
+        onRegisterSuccess = {},
+        onNavigateLogin = {}
+    )
 }

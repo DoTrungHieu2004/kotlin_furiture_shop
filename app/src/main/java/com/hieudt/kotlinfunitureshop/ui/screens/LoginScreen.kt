@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +25,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,12 +50,29 @@ import com.hieudt.kotlinfunitureshop.ui.theme.DarkCharcoal
 import com.hieudt.kotlinfunitureshop.ui.theme.GrayX11
 import com.hieudt.kotlinfunitureshop.ui.theme.PhilippineGray
 import com.hieudt.kotlinfunitureshop.ui.theme.RaisinBlack
+import com.hieudt.kotlinfunitureshop.viewmodel.provideAuthViewModel
+import com.hieudt.kotlinfunitureshop.viewmodel.state.AuthState
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit) {
+fun LoginScreen(
+    onLoginSuccess: () -> Unit,
+    onNavigateRegister: () -> Unit
+) {
+    val vm = provideAuthViewModel()
+    val state by vm.authState.collectAsState()
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(key1 = state) {
+        if (state is AuthState.Success) {
+            onLoginSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -110,10 +130,13 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(60.dp))
 
-        // Form đăng nhập
+        // TextField email
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                emailError = null
+            },
             label = {
                 Text(
                     text = "Email",
@@ -123,13 +146,23 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 )
             },
             singleLine = true,
+            isError = emailError != null,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
+        if (emailError != null) {
+            Text(text = emailError!!, color = Color.Red, fontSize = 12.sp)
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
+
+        // TextField mật khẩu
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                passwordError = null
+            },
             label = {
                 Text(
                     text = "Password",
@@ -139,6 +172,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 )
             },
             singleLine = true,
+            isError = passwordError != null,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (passwordVisible) {
@@ -165,7 +199,13 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 }
             }
         )
+        if (passwordError != null) {
+            Text(text = passwordError!!, color = Color.Red, fontSize = 12.sp)
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
+
+        // Button quên mật khẩu
         TextButton(
             onClick = {},
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
@@ -178,7 +218,10 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 color = DarkCharcoal
             )
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Button đăng nhập
         ElevatedButton(
             border = BorderStroke(
                 width = 2.dp,
@@ -192,7 +235,24 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(),
-            onClick = {},
+            onClick = {
+                var hasError = false
+
+                if (email.isEmpty()) {
+                    emailError = "Email không được để trống"
+                    hasError = true
+                }
+
+                if (password.isEmpty()) {
+                    passwordError = "Mật kẩu không được để trống"
+                    hasError = true
+                }
+
+                if (!hasError) {
+                    vm.login(email, password)
+                    onLoginSuccess()
+                }
+            },
         ) {
             Text(
                 text = "Login",
@@ -201,9 +261,16 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 fontFamily = NunitoSansFamily
             )
         }
+
+        if (state is AuthState.Loading) {
+            CircularProgressIndicator()
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Button đăng ký
         TextButton(
-            onClick = {},
+            onClick = { onNavigateRegister() },
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
         ) {
             Text(
@@ -215,10 +282,20 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             )
         }
     }
+
+    if (state is AuthState.Error) {
+        Text(
+            text = (state as AuthState.Error).message,
+            color = Color.Red
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewLoginScreen() {
-    LoginScreen(onLoginSuccess = {})
+    LoginScreen(
+        onLoginSuccess = {},
+        onNavigateRegister = {}
+    )
 }
