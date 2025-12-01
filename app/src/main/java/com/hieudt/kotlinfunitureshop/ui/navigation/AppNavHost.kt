@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.hieudt.kotlinfunitureshop.ui.screens.LoginScreen
+import com.hieudt.kotlinfunitureshop.ui.screens.MainScreen
 import com.hieudt.kotlinfunitureshop.ui.screens.RegisterScreen
 import com.hieudt.kotlinfunitureshop.ui.screens.WelcomeScreen
 import com.hieudt.kotlinfunitureshop.ui.screens.bottomNavGraph
@@ -22,7 +23,10 @@ fun AppNavHost() {
         startDestination = Graph.AUTH
     ) {
         authGraph(navController)
-        appGraph(navController)
+
+        composable(Graph.APP) {
+            MainScreen()
+        }
     }
 }
 

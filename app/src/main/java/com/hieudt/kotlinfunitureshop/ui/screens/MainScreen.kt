@@ -19,6 +19,7 @@ import com.hieudt.kotlinfunitureshop.ui.navigation.Graph
 import com.hieudt.kotlinfunitureshop.ui.navigation.Screen
 import com.hieudt.kotlinfunitureshop.ui.screens.fragments.FavoriteFragment
 import com.hieudt.kotlinfunitureshop.ui.screens.fragments.HomeFragment
+import com.hieudt.kotlinfunitureshop.ui.screens.fragments.NotificationFragment
 import com.hieudt.kotlinfunitureshop.ui.screens.fragments.ProfileFragment
 
 @Composable
@@ -41,11 +42,11 @@ fun MainScreen() {
                 BottomNavBar(navController)
             }
         }
-    ) { innerPadding ->
+    ) {
         NavHost(
             navController = navController,
-            startDestination = "home",
-            modifier = Modifier.padding(innerPadding)
+            startDestination = Graph.BOTTOM,
+            modifier = Modifier.padding(it)
         ) {
             bottomNavGraph(navController)
             noBottomNavGraph(navController)
@@ -61,14 +62,18 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
         composable(Screen.Home.route) {
             HomeFragment()
         }
-    }
 
-    composable(Screen.Favorites.route) {
-        FavoriteFragment()
-    }
+        composable(Screen.Favorites.route) {
+            FavoriteFragment()
+        }
 
-    composable(Screen.Profile.route) {
-        ProfileFragment()
+        composable(Screen.Notifications.route) {
+            NotificationFragment()
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileFragment()
+        }
     }
 }
 
