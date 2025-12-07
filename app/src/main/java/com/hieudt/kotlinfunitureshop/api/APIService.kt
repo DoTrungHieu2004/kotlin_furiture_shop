@@ -18,25 +18,25 @@ import retrofit2.http.Path
 interface APIService {
 
     // User routes
-    @POST("users/register")
+    @POST("api/users/register")
     suspend fun register(@Body req: RegisterRequest): AuthResponse
 
-    @POST("users/login")
+    @POST("api/users/login")
     suspend fun login(@Body req: LoginRequest): AuthResponse
 
-    @GET("users/me")
+    @GET("api/users/me")
     suspend fun getProfile(): UserResponse
 
-    @PUT("users/update")
+    @PUT("api/users/update")
     suspend fun updateUser(@Body req: UpdateUserRequest): UserResponse
 
-    @POST("users/address")
+    @POST("api/users/address")
     suspend fun addAddress(@Body req: AddressRequest): AddressResponse
 
-    @DELETE("users/address/{id}")
+    @DELETE("api/users/address/{id}")
     suspend fun deleteAddress(@Path("id") id: String): AddressResponse
 
     // Product routes
-    @GET("products")
+    @GET("api/products")
     suspend fun getProducts(): List<Product>
 }

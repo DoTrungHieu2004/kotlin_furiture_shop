@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object APIClient {
-    const val BASE_URL = "http://10.0.2.2:5000/api/"
+    const val BASE_URL = "http://10.0.2.2:5000/"
 
     fun create(tokenProvider: suspend () -> String?) : APIService {
         val logging = HttpLoggingInterceptor().apply {
