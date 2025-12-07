@@ -1,6 +1,6 @@
 package com.hieudt.kotlinfunitureshop.ui.components
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,16 +27,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.hieudt.kotlinfunitureshop.R
-import com.hieudt.kotlinfunitureshop.sample.SampleProduct
+import com.hieudt.kotlinfunitureshop.api.APIClient
+import com.hieudt.kotlinfunitureshop.data.models.Category
+import com.hieudt.kotlinfunitureshop.data.models.Product
 import com.hieudt.kotlinfunitureshop.ui.fonts.NunitoSansFamily
 import com.hieudt.kotlinfunitureshop.ui.theme.DarkCharcoal
 import com.hieudt.kotlinfunitureshop.ui.theme.GraniteGray
 
 @Composable
 fun ProductCard(
-    product: SampleProduct,
-    onAddToCartClicked: () -> Unit
+    product: Product,
+    onAddToCartClicked: () -> Unit,
+    onClickToInfo: () -> Unit
 ) {
     val formattedPrice = String.format("%.2f", product.price)
     val displayPrice = "$ $formattedPrice"
@@ -44,7 +48,8 @@ fun ProductCard(
     Card(
         modifier = Modifier
             .width(180.dp)
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { onClickToInfo() },
         shape = RoundedCornerShape(12.dp)
     ) {
         Column {
@@ -53,11 +58,14 @@ fun ProductCard(
                     .fillMaxWidth()
                     .height(200.dp)
             ) {
-                Image(
-                    painter = painterResource(id = product.image),
+                AsyncImage(
+                    model = "${APIClient.BASE_URL}uploads/products/${product.image}",
                     contentDescription = product.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier
+                        .height(140.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
                 )
 
                 Button(
@@ -111,13 +119,21 @@ fun ProductCard(
 @Composable
 private fun PreviewProductCard() {
     ProductCard(
-        product = SampleProduct(
-            id = "A101",
-            name = "Minimal Stand",
+        product = Product(
+            _id = "A101",
+            name = "Miminal Stand",
+            description = "It's just a minimal stand. Nothing special.",
             price = 12.00,
-            image = R.drawable.product_example,
-            description = "1234567890"
+            discount = 0.00,
+            image = "https://picsum.photos/200/300",
+            categoryId = Category(
+                _id = "1234",
+                name = "Table",
+                slug = "table"
+            ),
+            stock = 12
         ),
-        onAddToCartClicked = {}
+        onAddToCartClicked = {},
+        onClickToInfo = {}
     )
 }

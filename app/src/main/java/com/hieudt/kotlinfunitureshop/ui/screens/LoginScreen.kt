@@ -50,7 +50,7 @@ import com.hieudt.kotlinfunitureshop.ui.theme.DarkCharcoal
 import com.hieudt.kotlinfunitureshop.ui.theme.GrayX11
 import com.hieudt.kotlinfunitureshop.ui.theme.PhilippineGray
 import com.hieudt.kotlinfunitureshop.ui.theme.RaisinBlack
-import com.hieudt.kotlinfunitureshop.viewmodel.provideAuthViewModel
+import com.hieudt.kotlinfunitureshop.viewmodel.providers.provideAuthViewModel
 import com.hieudt.kotlinfunitureshop.viewmodel.state.AuthState
 
 @Composable

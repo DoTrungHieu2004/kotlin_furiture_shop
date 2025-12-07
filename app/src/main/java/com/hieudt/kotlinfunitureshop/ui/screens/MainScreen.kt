@@ -60,7 +60,9 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
         route = Graph.BOTTOM
     ) {
         composable(Screen.Home.route) {
-            HomeFragment()
+            HomeFragment(
+                onProductClick = {}
+            )
         }
 
         composable(Screen.Favorites.route) {

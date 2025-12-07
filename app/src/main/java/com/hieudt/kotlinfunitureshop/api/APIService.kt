@@ -7,6 +7,7 @@ import com.hieudt.kotlinfunitureshop.api.requests.UpdateUserRequest
 import com.hieudt.kotlinfunitureshop.api.responses.AddressResponse
 import com.hieudt.kotlinfunitureshop.api.responses.AuthResponse
 import com.hieudt.kotlinfunitureshop.api.responses.UserResponse
+import com.hieudt.kotlinfunitureshop.data.models.Product
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -34,4 +35,8 @@ interface APIService {
 
     @DELETE("users/address/{id}")
     suspend fun deleteAddress(@Path("id") id: String): AddressResponse
+
+    // Product routes
+    @GET("products")
+    suspend fun getProducts(): List<Product>
 }
