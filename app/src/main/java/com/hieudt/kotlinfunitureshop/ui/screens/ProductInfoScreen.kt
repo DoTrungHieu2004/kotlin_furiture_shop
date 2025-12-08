@@ -1,6 +1,5 @@
 package com.hieudt.kotlinfunitureshop.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,10 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,7 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.hieudt.kotlinfunitureshop.R
+import com.hieudt.kotlinfunitureshop.api.APIClient
+import com.hieudt.kotlinfunitureshop.data.models.Product
 import com.hieudt.kotlinfunitureshop.ui.components.QuantitySelector
 import com.hieudt.kotlinfunitureshop.ui.fonts.GelasioFamily
 import com.hieudt.kotlinfunitureshop.ui.fonts.NunitoSansFamily
@@ -41,20 +47,60 @@ import com.hieudt.kotlinfunitureshop.ui.theme.GraniteGray
 import com.hieudt.kotlinfunitureshop.ui.theme.Gray
 import com.hieudt.kotlinfunitureshop.ui.theme.Maize
 import com.hieudt.kotlinfunitureshop.ui.theme.RaisinBlack
+import com.hieudt.kotlinfunitureshop.viewmodel.providers.provideProductDetailViewModel
 
 @Composable
-fun ProductInfoScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        ProductHeader()
-        ProductInfo()
+fun ProductInfoScreen(productId: String, navController: NavHostController) {
+    val vm = provideProductDetailViewModel()
+    val product = vm.product
+    val isLoading = vm.isLoading
+    val error = vm.error
+
+    LaunchedEffect(productId) {
+        vm.loadProductDetail(productId)
+    }
+
+    when {
+        isLoading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        error != null -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Error: $error",
+                    color = Color.Red
+                )
+            }
+        }
+
+        product != null -> {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                ProductHeader(
+                    product = product,
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
+                ProductInfo(product = product)
+            }
+        }
     }
 }
 
 // Header
 @Composable
-fun ProductHeader() {
+fun ProductHeader(product: Product, onBack: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -67,16 +113,19 @@ fun ProductHeader() {
             )
     ) {
         // Ảnh sản phẩm
-        Image(
-            painter = painterResource(R.drawable.product_example),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+        AsyncImage(
+            model = "${APIClient.BASE_URL}uploads/products/${product.image}",
+            contentDescription = product.name,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(360.dp)
+                .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)),
+            contentScale = ContentScale.Crop
         )
 
         // Nút quay lại
         IconButton(
-            onClick = {},
+            onClick = { onBack() },
             modifier = Modifier
                 .padding(16.dp)
                 .size(40.dp)
@@ -93,13 +142,13 @@ fun ProductHeader() {
 
 // Thông tin sản phẩm
 @Composable
-fun ProductInfo() {
+fun ProductInfo(product: Product) {
     Column(
         modifier = Modifier.padding(24.dp)
     ) {
         // Tên sản phẩm
         Text(
-            text = "Minimal Stand",
+            text = product.name,
             fontSize = 24.sp,
             fontWeight = FontWeight.Normal,
             fontFamily = GelasioFamily,
@@ -115,7 +164,7 @@ fun ProductInfo() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "$ 50",
+                text = "$${product.price}",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = NunitoSansFamily,
@@ -158,7 +207,7 @@ fun ProductInfo() {
 
         // Mô tả sản phẩm
         Text(
-            text = stringResource(R.string.lorem_ipsum),
+            text = product.description,
             fontSize = 16.sp,
             fontWeight = FontWeight.Light,
             fontFamily = NunitoSansFamily,
@@ -214,5 +263,8 @@ fun ProductInfo() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewProductInfoScreen() {
-    ProductInfoScreen()
+    ProductInfoScreen(
+        productId = "",
+        navController = rememberNavController()
+    )
 }

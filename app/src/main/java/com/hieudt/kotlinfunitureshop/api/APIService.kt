@@ -46,6 +46,11 @@ interface APIService {
         @Path("id") id: String
     ): List<Product>
 
+    @GET("api/products/{id}")
+    suspend fun getProduct(
+        @Path("id") id: String
+    ): Product
+
     // Category routes
     @GET("api/categories")
     suspend fun getCategories(): List<Category>

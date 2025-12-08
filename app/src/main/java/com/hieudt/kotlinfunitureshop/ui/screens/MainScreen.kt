@@ -61,7 +61,9 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
     ) {
         composable(Screen.Home.route) {
             HomeFragment(
-                onProductClick = {}
+                onProductClick = { id ->
+                    navController.navigate(Screen.ProductInfo.createRoute(id))
+                }
             )
         }
 
@@ -81,16 +83,20 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavHostController) {
 
 fun NavGraphBuilder.noBottomNavGraph(navController: NavHostController) {
     navigation(
-        startDestination = Screen.ProductInfo.routeWithArg,
+        startDestination = Screen.ProductInfo.route,
         route = Graph.NO_BOTTOM
     ) {
         composable(
-            route = Screen.ProductInfo.routeWithArg,
+            route = Screen.ProductInfo.route,
             arguments = listOf(
                 navArgument("id") { type = NavType.StringType }
             )
-        ) {
-            ProductInfoScreen()
+        ) { backStack ->
+            val id = backStack.arguments?.getString("id")!!
+            ProductInfoScreen(
+                productId = id,
+                navController = navController
+            )
         }
     }
 }

@@ -145,7 +145,7 @@ fun HomeFragment(
                             ProductCard(
                                 product = p,
                                 onAddToCartClicked = {},
-                                onClickToInfo = {}
+                                onClickToInfo = { onProductClick(p._id) }
                             )
                         }
                     }

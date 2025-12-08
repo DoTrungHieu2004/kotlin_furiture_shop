@@ -13,8 +13,6 @@ sealed class Screen(val route: String) {
 
     // Các màn hình khác
     object ProductInfo : Screen("product_info/{id}") {
-        val routeWithArg = "product_info/{id}"
-
         fun createRoute(id: String) = "product_info/$id"
     }
 }
