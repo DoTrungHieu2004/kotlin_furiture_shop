@@ -16,6 +16,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,20 +29,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hieudt.kotlinfunitureshop.R
 import com.hieudt.kotlinfunitureshop.ui.components.AppToolbar
+import com.hieudt.kotlinfunitureshop.ui.components.CategoryFilterDialog
 import com.hieudt.kotlinfunitureshop.ui.components.ProductCard
 import com.hieudt.kotlinfunitureshop.ui.components.ToolbarButton
 import com.hieudt.kotlinfunitureshop.ui.fonts.NunitoSansFamily
 import com.hieudt.kotlinfunitureshop.ui.theme.RaisinBlack
+import com.hieudt.kotlinfunitureshop.viewmodel.providers.provideCategoryViewModel
 import com.hieudt.kotlinfunitureshop.viewmodel.providers.provideProductViewModel
 
 @Composable
 fun HomeFragment(
     onProductClick: (String) -> Unit
 ) {
-    val vm = provideProductViewModel()
-    val products = vm.products
-    val isLoading = vm.isLoading
-    val error = vm.error
+    val productVM = provideProductViewModel()
+    val categoryVM = provideCategoryViewModel()
+    
+    val products = productVM.products
+    val categories = categoryVM.categories
+    val isLoading = productVM.isLoading
+    val error = productVM.error
+
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedCatName by remember { mutableStateOf("All products") }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -59,7 +71,7 @@ fun HomeFragment(
             )
 
             Button(
-                onClick = {},
+                onClick = { showDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -70,49 +82,73 @@ fun HomeFragment(
                 )
             ) {
                 Text(
-                    text = "Filter by category",
+                    text = selectedCatName,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = NunitoSansFamily
                 )
             }
 
-            if (isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-                return
+            // Hiển thị dialog
+            if (showDialog) {
+                CategoryFilterDialog(
+                    categories = categories,
+                    onDismiss = { showDialog = false },
+                    onCategorySelected = { cat ->
+                        showDialog = false
+
+                        if (cat == null) {
+                            // Lấy tất cả sản phẩm
+                            selectedCatName = "All products"
+                            productVM.loadProducts()
+                        } else {
+                            // Lấy theo danh mục
+                            selectedCatName = cat.name
+                            productVM.loadProductsByCategory(cat._id)
+                        }
+                    }
+                )
             }
 
-            if (error != null) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = error,
-                        color = Color.Red
-                    )
+            // Nội dung
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
-                return
-            }
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(products) { p ->
-                    ProductCard(
-                        product = p,
-                        onAddToCartClicked = {},
-                        onClickToInfo = {}
-                    )
+                error != null -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = error,
+                            color = Color.Red
+                        )
+                    }
+                }
+
+                else -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(products) { p ->
+                            ProductCard(
+                                product = p,
+                                onAddToCartClicked = {},
+                                onClickToInfo = {}
+                            )
+                        }
+                    }
                 }
             }
         }

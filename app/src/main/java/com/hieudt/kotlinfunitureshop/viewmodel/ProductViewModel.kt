@@ -40,4 +40,17 @@ class ProductViewModel(
             }
         }
     }
+
+    fun loadProductsByCategory(categoryId: String) {
+        viewModelScope.launch {
+            try {
+                isLoading = true
+                products = repo.getProductsByCategory(categoryId)
+            } catch (e: Exception) {
+                error = e.message
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 }

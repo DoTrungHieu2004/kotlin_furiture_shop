@@ -7,6 +7,7 @@ import com.hieudt.kotlinfunitureshop.api.requests.UpdateUserRequest
 import com.hieudt.kotlinfunitureshop.api.responses.AddressResponse
 import com.hieudt.kotlinfunitureshop.api.responses.AuthResponse
 import com.hieudt.kotlinfunitureshop.api.responses.UserResponse
+import com.hieudt.kotlinfunitureshop.data.models.Category
 import com.hieudt.kotlinfunitureshop.data.models.Product
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -39,4 +40,13 @@ interface APIService {
     // Product routes
     @GET("api/products")
     suspend fun getProducts(): List<Product>
+
+    @GET("api/products/category/{id}")
+    suspend fun getProductByCategory(
+        @Path("id") id: String
+    ): List<Product>
+
+    // Category routes
+    @GET("api/categories")
+    suspend fun getCategories(): List<Category>
 }
